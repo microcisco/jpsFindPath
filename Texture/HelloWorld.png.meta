@@ -1,17 +1,21 @@
 {
-  "ver": "2.3.3",
+  "ver": "2.3.7",
   "uuid": "c9b414c5-dbf9-450a-8ad0-afb78347d623",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "premultiplyAlpha": false,
   "genMipmaps": false,
   "packable": true,
+  "width": 195,
+  "height": 270,
   "platformSettings": {},
   "subMetas": {
     "HelloWorld": {
-      "ver": "1.0.4",
+      "ver": "1.0.6",
       "uuid": "84ff3a43-65d2-4062-8844-4ef5b12b0581",
+      "importer": "sprite-frame",
       "rawTextureUuid": "c9b414c5-dbf9-450a-8ad0-afb78347d623",
       "trimType": "auto",
       "trimThreshold": 1,

@@ -67,7 +67,7 @@ export class JPS {
     private readonly mapData: GameObject & { gridLength: number } = null;
 
     /**@description 格式化成地图数据*/
-    public static formatToMapData(gameObject: GameObject, gridLength: number): GameObject & { gridLength: number } {
+    public static formatToMapData(gameObject: GameObject, gridLength: number): GameObject & { gridLength: number} {
         return {
             anchorY: gameObject.anchorY,
             anchorX: gameObject.anchorX,
@@ -76,7 +76,7 @@ export class JPS {
             x: gameObject.x,
             y: gameObject.y,
             gridLength: gridLength,
-            angle: -gameObject.angle
+            angle: -gameObject.angle,
         };
     }
 
@@ -124,8 +124,13 @@ export class JPS {
             return 1
         });
         let v2: PathPointData = this.openList.pop();
-        v2 && this.removeFromOpenList(v2);
-        return this.mapTable.get(JPS.getKey(v2))
+        if(v2) {
+            this.removeFromOpenList(v2);
+            return this.mapTable.get(JPS.getKey(v2))
+        } else {
+            return null;
+        }
+
     }
 
     /**@description 移除最小F值的路点*/
@@ -341,6 +346,17 @@ export class JPS {
                 ptr[0].y += 1;
                 if (!this.isClear(ptr[0])) {
                     ptr[0].state = 1;
+                } else if(ptr[0].x === this.targetPoint.x && ptr[0].y === this.targetPoint.y) {
+                    // 终点
+                    ptr[0].state = 1;
+                    if(this.nowPoint.x === point.x && this.nowPoint.y === point.y) {
+                        // 直接查找
+                        this.hasFindTarget = true;
+                    } else {
+                        // 通过该点可以找打终点
+                        JPoint.push(this.cloneV2(ptr[0]));
+                    }
+                    return;
                 } else {
                     if (this.forcedNeighbour(ptr[0], this.up).length) {
                         //存在强制邻居
@@ -354,6 +370,17 @@ export class JPS {
                 if (!this.isClear(ptr[1])) {
                     ptr[1].state = 1;
                     continue;
+                } else if(ptr[1].x === this.targetPoint.x && ptr[1].y === this.targetPoint.y) {
+                    // 终点
+                    ptr[1].state = 1;
+                    if(this.nowPoint.x === point.x && this.nowPoint.y === point.y) {
+                        // 直接查找
+                        this.hasFindTarget = true;
+                    } else {
+                        // 通过该点可以找打终点
+                        JPoint.push(this.cloneV2(ptr[1]));
+                    }
+                    return;
                 } else {
                     if (this.forcedNeighbour(ptr[1], this.right).length) {
                         //存在强制邻居
@@ -367,6 +394,17 @@ export class JPS {
                 if (!this.isClear(ptr[2])) {
                     ptr[2].state = 1;
                     continue;
+                } else if(ptr[2].x === this.targetPoint.x && ptr[2].y === this.targetPoint.y) {
+                    // 终点
+                    ptr[2].state = 1;
+                    if(this.nowPoint.x === point.x && this.nowPoint.y === point.y) {
+                        // 直接查找
+                        this.hasFindTarget = true;
+                    } else {
+                        // 通过该点可以找打终点
+                        JPoint.push(this.cloneV2(ptr[2]));
+                    }
+                    return;
                 } else {
                     if (this.forcedNeighbour(ptr[2], this.down).length) {
                         //存在强制邻居
@@ -380,6 +418,17 @@ export class JPS {
                 if (!this.isClear(ptr[3])) {
                     ptr[3].state = 1;
                     continue;
+                } else if(ptr[3].x === this.targetPoint.x && ptr[3].y === this.targetPoint.y) {
+                    // 终点
+                    ptr[3].state = 1;
+                    if(this.nowPoint.x === point.x && this.nowPoint.y === point.y) {
+                        // 直接查找
+                        this.hasFindTarget = true;
+                    } else {
+                        // 通过该点可以找打终点
+                        JPoint.push(this.cloneV2(ptr[3]));
+                    }
+                    return;
                 } else {
                     if (this.forcedNeighbour(ptr[3], this.left).length) {
                         //存在强制邻居
@@ -389,7 +438,13 @@ export class JPS {
             }
             for (const ptrElement of ptr) {
                 if(ptrElement.x === this.targetPoint.x && ptrElement.y === this.targetPoint.y) {
-                    this.hasFindTarget = true;
+                    if(this.nowPoint.x === point.x && this.nowPoint.y === point.y) {
+                        // 直接查找
+                        this.hasFindTarget = true;
+                    } else {
+                        // 通过该点可以找打终点
+                        JPoint.push(this.cloneV2(ptrElement));
+                    }
                     return;
                 }
             }
@@ -399,20 +454,54 @@ export class JPS {
 
     search45(arr: Vector2[], point: Vector2) {
         const allDir = [{x: 1, y: 1}, {x: 1, y: -1}, {x: -1, y: -1}, {x: -1, y: 1}];
+        const arr1 = [];
         for (const dir of allDir) {
             let v2 = this.cloneV2(point);
+            let tag;
             while (this.isClear(v2) &&
             (this.isClear({x: v2.x, y: v2.y + dir.y}) || this.isClear({x: v2.x + dir.x, y: v2.y}))) {
                 if(v2.x === this.targetPoint.x && v2.y === this.targetPoint.y) {
-                    this.hasFindTarget = true;
+                    if(this.nowPoint.x === point.x && this.nowPoint.y === point.y) {
+                        // 直接查找
+                        this.hasFindTarget = true;
+                    } else {
+                        arr.push(this.cloneV2(v2));
+                    }
                     return;
                 }
-                if (this.forcedNeighbour(v2, dir).length) {
+                if (tag && this.forcedNeighbour(v2, dir).length) {
+                    // 自身不搜索强制邻居
+                    arr.push(this.cloneV2(v2));
+                    // 发现跳点不再搜索
+                    break;
+                }
+                tag = true;
+                arr1.length = 0;
+                this.searchBase(arr1, v2, [dir]);
+                if(this.hasFindTarget) {
+                    // 发现终点
+                    if(!this.isInClosedList(v2)) {
+                        let pointData = new PathPointData(v2.x, v2.y);
+                        this.addToOpenList(pointData);
+                        this.nowPoint = this.mapTable.get(JPS.getKey(v2))
+                    }
+                    return;
+                }
+                if(arr1.length > 0) {
                     arr.push(this.cloneV2(v2));
                 }
-                this.searchBase(arr, v2, [dir]);
                 v2.x += dir.x;
                 v2.y += dir.y;
+                if(v2.x === this.targetPoint.x && v2.y === this.targetPoint.y) {
+                    // 终点
+                    if(this.nowPoint.x === point.x && this.nowPoint.y === point.y) {
+                        // 直接查找
+                        this.hasFindTarget = true;
+                    } else {
+                        arr.push(this.cloneV2(v2));
+                    }
+                    return;
+                }
             }
         }
     }
@@ -435,11 +524,16 @@ export class JPS {
         ) return [];  //起点有问题
 
         this.nowPoint = this.bronPoint = this.mapTable.get(JPS.getKey(p1));
+        // 重置起点
+        this.nowPoint.parent = null;
         this.targetPoint = this.mapTable.get(JPS.getKey(p2));
         let paths: Vector2[] = [];  //路径
-        if (JPS.getKey(p1) === JPS.getKey(p2)) return paths;  //终点和起点重合
+        if (JPS.getKey(p1) === JPS.getKey(p2)) {
+            //终点和起点重合
+            paths.push(this.targetPoint);
+            return paths;
+        }
         let maxSearchAmount = 0;  //重置搜寻次数
-
 
         //跳点
         const JPoint = [];
@@ -460,8 +554,8 @@ export class JPS {
             }
             JPoint.length = 0;
             this.nowPoint = this.removeMinFFromOpenList();
-            if (this.nowPoint === void 0) return paths;  //死路
-            if(maxSearchAmount > 300) break;
+            if (!this.nowPoint) return paths;  //死路
+            if(++maxSearchAmount > 666) break;
         }
 
         if(this.hasFindTarget) {
@@ -473,6 +567,7 @@ export class JPS {
             }
             return paths.reverse();
         }
+        return [];
     }
 
     /**@description 格子坐标转换为和地图同一坐标系的坐标
@@ -521,11 +616,12 @@ export class JPS {
 
     /**@description 计算到出生点的估值*/
     private static G(p: PathPointData) {
-        if (p.parent.x === p.x || p.parent.y === p.y) {
-            p.G = p.parent.G + 10;
-        } else {
-            p.G = p.parent.G + 14;
-        }
+        p.G = p.parent.G + (Math.abs(p.x - p.parent.x) * 10 + Math.abs(p.y - p.parent.y) * 10);
+        // if (p.parent.x === p.x || p.parent.y === p.y) {
+        //     p.G = p.parent.G + 10;
+        // } else {
+        //     p.G = p.parent.G + 14;
+        // }
     }
 
     /**@description 计算到目标点的估值*/
