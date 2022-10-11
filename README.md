@@ -5,7 +5,7 @@
 + 最近又研究了一下跳点寻路所以又来分享给大家了接口什么的没变,此外还有a星什么的也有自己翻阅哈
 + 具体原理参考 https://zhuanlan.zhihu.com/p/25093275
 ```
-![avatar](https://github.com/microcisco/astartForTS/blob/master/563.gif)
+![avatar](https://github.com/microcisco/jpsFindPath/blob/master/demo.gif)
 
 
 - 快速使用
