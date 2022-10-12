@@ -616,16 +616,11 @@ export class JPS {
 
     /**@description 计算到出生点的估值*/
     private static G(p: PathPointData) {
-        p.G = p.parent.G + (Math.abs(p.x - p.parent.x) * 10 + Math.abs(p.y - p.parent.y) * 10);
-        // if (p.parent.x === p.x || p.parent.y === p.y) {
-        //     p.G = p.parent.G + 10;
-        // } else {
-        //     p.G = p.parent.G + 14;
-        // }
+        p.G = p.parent.G + Math.sqrt(Math.pow(p.x - p.parent.x, 2) + Math.pow(p.y - p.parent.y, 2));
     }
 
     /**@description 计算到目标点的估值*/
     private H(p: PathPointData) {
-        p.H = Math.abs(this.targetPoint.x - p.x) * 10 + Math.abs(this.targetPoint.y - p.y) * 10;
+        p.H = Math.sqrt(Math.pow(this.targetPoint.x - p.x, 2) + Math.pow(this.targetPoint.y - p.y, 2));
     }
 }
